@@ -11,27 +11,30 @@ Running
 
 Run with Java 1.8.0_131 to reproduce the problem:
 
-    java -Djava.lang.invoke.MethodHandle.DUMP_CLASS_FILES=true test.BMHTest
+    java -Djava.lang.invoke.MethodHandle.DUMP_CLASS_FILES=true test.BMHTest 128
 
+The following command would not trigger the problem:
+
+    java -Djava.lang.invoke.MethodHandle.DUMP_CLASS_FILES=true test.BMHTest 127
 
 Results
 =======
 
 We can see it generates excessive number of BMH classes. Here is the result for a sample run:
 
-    ls DUMP_CLASS_FILES/java/lang/invoke/ | wc -l
+    ls DUMP_CLASS_FILES/java/lang/invoke/LambdaForm\$BMH*.class | wc -l
 
-    10026
+    1002
 
 Here is a sample disassemble code:
 
-    javap -c DUMP_CLASS_FILES/java/lang/invoke/LambdaForm\$BMH4321.class
+    javap -c DUMP_CLASS_FILES/java/lang/invoke/LambdaForm\$BMH123.class
 
-    Compiled from "LambdaForm$BMH4321"
-    final class java.lang.invoke.LambdaForm$BMH4321 {
-      static java.lang.Object reinvoke_4321(java.lang.Object, java.lang.Object);
+    Compiled from "LambdaForm$BMH123"
+    final class java.lang.invoke.LambdaForm$BMH123 {
+      static java.lang.Object reinvoke_123(java.lang.Object, java.lang.Object);
         Code:
-           0: ldc           #12                 // String CONSTANT_PLACEHOLDER_0 <<(Generator)String : BMH.reinvoke_001=Lambda(a0:L/SpeciesData<LL>,a1:L)=>{\n    t2:L=BoundMethodHandle$Species_LL.argL1(a0:L);\n    t3:L=BoundMethodHandle$Species_LL.argL0(a0:L);\n    t4:L=MethodHandle.invokeBasic(t3:L,t2:L,a1:L);t4:L}\n& BMH=[MethodHandle(String,Generator)String, generate2]>>
+           0: ldc           #12                 // String CONSTANT_PLACEHOLDER_0 <<(String)String : BMH.reinvoke_001=Lambda(a0:L/SpeciesData<LL>,a1:L)=>{\n    t2:L=BoundMethodHandle$Species_LL.argL1(a0:L);\n    t3:L=BoundMethodHandle$Species_LL.argL0(a0:L);\n    t4:L=MethodHandle.invokeBasic(t3:L,t2:L,a1:L);t4:L}\n& BMH=[MethodHandle(String,String)String, foo121]>>
            2: checkcast     #14                 // class java/lang/invoke/MethodHandle
            5: astore_0
            6: aload_0
@@ -52,12 +55,8 @@ Here is a sample disassemble code:
     
       static void dummy();
         Code:
-           0: ldc           #30                 // String BMH.reinvoke_4321=Lambda(a0:L/SpeciesData<LL>,a1:L)=>{\n    t2:L=BoundMethodHandle$Species_LL.argL1(a0:L);\n    t3:L=BoundMethodHandle$Species_LL.argL0(a0:L);\n    t4:L=MethodHandle.invokeBasic(t3:L,t2:L,a1:L);t4:L}
+           0: ldc           #30                 // String BMH.reinvoke_123=Lambda(a0:L/SpeciesData<LL>,a1:L)=>{\n    t2:L=BoundMethodHandle$Species_LL.argL1(a0:L);\n    t3:L=BoundMethodHandle$Species_LL.argL0(a0:L);\n    t4:L=MethodHandle.invokeBasic(t3:L,t2:L,a1:L);t4:L}
            2: pop
            3: return
     }
-
-
-
-
 
